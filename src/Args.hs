@@ -18,7 +18,7 @@ versionString :: String
 versionString = "dev"
 #endif
 
-verbosityOpt, veryVerbosityOpt, skipSanityOpt, sharingOpt, noPS1Opt :: Switch
+verbosityOpt, veryVerbosityOpt, skipSanityOpt, sharingOpt, refreshOpt, noPS1Opt :: Switch
 
 verbosityOpt = Switch { switchName  = "verbose"
                       , switchHelp  = "Print some debugging info"
@@ -38,6 +38,11 @@ skipSanityOpt = Switch { switchName  = "skip-sanity-check"
 sharingOpt = Switch { switchName  = "dont-share-cabal-cache"
                     , switchHelp  = "Don't share ~/.cabal/packages (hackage download cache)"
                     , switchShort = Nothing
+                    }
+
+refreshOpt = Switch { switchName  = "refresh-cabal"
+                    , switchHelp  = "Refresh package cache and reinstall cabal-install, to handle differences in GHC calling conventions across compiler versions"
+                    , switchShort = Just 'r'
                     }
 
 noPS1Opt =
@@ -94,6 +99,7 @@ argParser = proc () -> do
                      | otherwise              -> Tarball s
   skipSanityCheckFlag <- getOpt skipSanityOpt -< ()
   noSharingFlag <- getOpt sharingOpt -< ()
+  refreshFlag <- getOpt refreshOpt -< ()
   make <- getOpt makeOpt -< ()
   returnA -< Options{ verbosity       = verboseness
                    , skipSanityCheck = skipSanityCheckFlag
@@ -102,6 +108,7 @@ argParser = proc () -> do
                    , makeCmd         = make
                    , noSharing       = noSharingFlag
                    , noPS1           = noPS1'
+                   , refreshCabal    = refreshFlag
                    }
 
 getArgs :: IO Options

@@ -43,6 +43,7 @@ realMain = do
   installProgSymlinks
   symlinkToSkeleton "runghc" "runhaskell"
   cabalUpdate
+  cabalReinstall
   info ""
   dotDir <- dotDirName
   info $ "To activate the new environment use 'source " ++ dotDir ++ "/bin/activate'"

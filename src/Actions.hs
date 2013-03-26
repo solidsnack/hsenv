@@ -1,4 +1,5 @@
 module Actions ( cabalUpdate
+               , cabalReinstall
                , installCabalConfig
                , installCabalWrapper
                , installActivateScript
@@ -59,6 +60,14 @@ cabalUpdate = do
               _ <- indentMessages $ insideProcess "cabal" ["--config-file=" ++ cabalConfig, "update"] Nothing
               return ()
 
+cabalReinstall = do
+  refreshCabalFlag <- asks refreshCabal
+  when refreshCabalFlag $ do
+    debug "Update package database and reinstalling cabal-install..."
+    dirStructure <- hseDirStructure
+    let activateScript = hsEnvBinDir dirStructure </> "activate"
+    _ <- indentMessages $ outsideProcess' "sh" ["-ec", ". " ++ activateScript ++ " && cabal update && cabal install cabal-install"]
+    return ()
 
 -- install cabal wrapper (in bin/ directory) inside virtual environment dir structure
 installCabalWrapper :: MyMonad ()
